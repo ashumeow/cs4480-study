@@ -1,0 +1,275 @@
+2.1
+
+2.1.1
+
+- Be able to explain and compare the two predominant application architectures
+in use in the Internet, including giving examples and discussing the pros and
+cons of each approach. 
+
+* Client-Server -- requires dedicated server, scales poorly, simpler to manage: Google
+* P2P -- requires more complex algorithm to manage, scales dynamically: BitTorrent
+
+2.1.2
+
+- Be able to explain how networked applications are realized and communicate.
+- Be able to explain the API provided for communication between application
+processes and the network.
+
+* Exchange messages via sockets, an application-transport layer "doorstep" abstraction that uses processes,
+ and ports to send messages between those layers.
+
+2.1.3
+
+- Be able to list and describe the different dimensions along which
+transport services can be provided to applications.
+- Be able to give examples of applications that would require and/or
+benefit from transport services being provided along these different
+dimensions.
+
+* loss-tolerance, throughput, timing, security
+* Bank transactions need security, VoIP needs throughput allows loss-tolerance
+
+2.1.4
+
+- Be able to describe the transport services that are and are not provided
+by the Internet.
+- Provide examples of applications that use the different Internet transport
+services.
+
+* UDP -- virtually no services, TCP -- loss-tolerant, no other guarantees.
+* UDP -- VoIP, TCP -- Browsers
+
+2.1.5
+
+- Be able to explain the purpose of application layer protocols and the
+relationship between applications and application layer protocols.
+
+* Application layers have the most accessible extensibility; applications interpret data from lower layers. 
+
+2.2
+
+2.2.1
+
+- Be able to explain the working of the HTTP protocol including the application
+architecture being used, the type of interaction that is used, the transport
+protocol used and the characteristic that allows the protocol to scale.
+
+* HTTP uses TCP, is stateless, and communicates with application layer web browsers.
+
+2.2.2
+
+- Be able to explain and reason about the details of downloading and rendering
+in a browser a typical web page with embedded objects assuming both non-persistent
+and persistent connections. 
+
+* With non-persistent connections a new TCP connection must be created for every object to download.
+* persistent connections can download multiple objects serially and/or concurrently.
+
+1. HTTP clinet initiates a TCP connect to server on port 80
+2. HTTP sends request to server.
+3. HTTP server receives the request, grabs the requested object from upper layer, sends the "message"
+4. HTTP server sends a Close message (after all objects have been sent if persistent) 
+5. HTTP client receives the close message and closes its end, and sends confirmation to the host.
+6. Host closes TCP connection.
+
+2.2.3
+
+- Be able to identify and describe the purpose of the elements
+of an HTTP request. 
+- Be able to explain the need for and use of different HTTP methods fields.
+- Be able to identify and describe the purpose of the elements
+of an HTTP response.
+- Be able to interpret, analyze and explain a transcript of
+HTTP interaction.
+
+* Method: Determines what the client is asking for: (GET, POST etc.)
+* URL: Which location in the internet the request should be sent to
+* Version: Verify the format of this request
+* Header fields: Specify additional information about the request.
+* Entity body: Contains any payload if needed.
+
+* Version: Verify the format of this response.
+* Status Code: Send the encoding for this response.
+* Phrase: In english, what does the status code mean?
+* Header lines: ...
+* Entity body: ...
+
+2.2.4
+
+- Be able to explain the need for HTTP cookies.
+- Be able to explain how HTTP cookies satisfy this need.
+
+*TCP is stateless.  If state is desirable, cookies can be used by storing a file on the client that can be
+  sent/analyzed in the future to represent state.
+
+2.2.5
+
+- Be able to explain the functionality of an HTTP proxy server.
+- Be able to explain different scenarios in which HTTP proxies could
+be useful.
+
+* Intercepts requests sent to a remote host and provides functionality such as caching or enhances
+  privacy for the client.
+
+2.2.6
+
+- Be able to explain the HTTP conditional GET mechanism and explain where
+it could/should be used.
+
+* Conditional GET should be used to verify that any caches response is up to date.  If the response is not,
+  the Conditional GET forces any proxy/caching server to get a potentially new version from the remote host.
+
+2.3
+
+- Be able to explain at least three ways in which FTP
+differs from HTTP (from a protocol perspective, not a user
+perspective).
+
+* FTP has a command connection independent of its data connection.
+* FTP has state (directory selection)
+* Control connection is persistent, Data connection(s) are not.
+
+2.4.
+
+- Be able to list and describe the functionality of the three
+main components that enable email.
+
+* User-Agent -- requests mail from server
+* Mail server -- stores and transfers email
+* SMTP -- communicates between UA and MS
+
+2.4.1 
+
+- Be able to explain the steps involved for Alice to send email to Bob
+whose email account is associated with a different mail server than
+that of Alice.
+- Be able to interpret, analyze and explain a transcript of an SMTP exchange
+between an SMTP client and server.
+
+* Alice's UA sends bobs address and a payload to the MS where it is placed in a queue.
+* SMTP notices message and transfers it to Bob's MS via TCP.
+* SMTP handshakes and send's Alice's message.
+* Bob's MS receives the message and it sits there waiting for Bob's UA to retrieve it.
+
+2.4.2
+
+- Be able to list and describe three differences between SMTP and HTTP
+(from a protocol perspective).
+
+* Push vs Pull protocol.
+* 7 Bit ASCII required
+* All objects are stored in a single message with SMTP.
+
+2.4.3
+
+- Be able to explain the relationship between message header lines and
+SMTP commands.
+
+* Header lines are part of the message (From: To:)
+* SMTP commands, even with the same name, are only used within the protocol to actaully send the messages
+  to the proper locations.
+
+2.4.4
+
+- Be able to explain the need for mail access protocols and how they
+are different from SMTP.
+- Be able to explain the difference between POP3 and IMAP.
+
+* SMTP has no security, does not allow user to passively receive new emails, has no folder structure.
+* POP3 adds cleartext security (joke!), Allows for pull protocol behavior.
+* IMAP adds file folder structure, local copies and persistent copies on MS, maintains state.
+
+2.5
+
+- Be able to explain the need for the domain name system.
+
+* IP addresses are a pain to memorize.
+
+2.5.1
+
+- Be able to explain how DNS, which is an application level protocol,
+is not really used as an application by itself, but all the same is
+an essential part of nearly every application on the Internet.
+(Part of explanation should involve a step-by-step explanation of
+how another protocol interacts with and uses DNS.)
+- Be able to list and describe four different services provided by DNS.
+
+* DNS is needed to translate IP addresses into memorable names, lays on the application layer but
+is needed/used by the transport layer. 
+* Local machine sends hostname to DNS --> DNS sends query to DNS server --> DNS server sends reply w\Addr -->
+   Client can now use Addr to open TCP with remote host.
+
+1. DNS lookup
+2. Host aliasing
+3. MS ailiasing
+4. Load distribution
+
+2.5.2
+
+- Be able to describe the DNS hierarchy and explain the functionality provided
+by each level in the hierarchy. (Include the local DNS server as part
+of the hierarchy.)
+- Be able to explain the interactions and steps involved in performing a
+DNS lookup.
+
+Local DNS --> Root DNS --> Local DNS --> TopLevelDomain DNS --> Local DNS --> Authoritative DNS --> Local DNS --> client
+
+2.5.3
+
+- Be able to interpret, analyze and explain the output from common DNS tools
+such as nslook and dig.
+- Be able to explain the process whereby DNS entries for a new domain
+name is entered into the DNS system.
+- Be able to explain a number of ways in which DNS is vulnerable to attack.
+(Excluding flooding attacks.)
+
+* Colton I need help here.
+* And here
+* DNS is vulnerable to Man-in-the-middle attacks where an attacker intercepts correspondence and pretends to be
+both sides of a communication.  Also response poisoning, tricking users into sending traffic elsewhere.
+
+2.6
+
+2.6.1
+
+- Be able to explain the inherent scalability benefit that P2P 
+has (assuming the ideal conditions explained in this section).
+You might be asked to provide an intuitive explanation in essay style.
+Alternatively you might be asked to do this by explaining the
+meaning of each of the terms in equation 2.1 and equation 2.2 as part
+of your explanation.
+- Be able to explain the functioning of the BitTorrent P2P protocol.
+
+- Because P2P clients are also hosts, there is never a shortage.
+- Bittorrent uses 4 peers that are sending at a good rate with each connection.  It uses 1 randomly selected
+ "optimistically unchoked" peer as well which may bump one of the 4 others off.  It only trades info with those
+5.  It also trades rarest chunks of data first.
+
+2.6.2
+
+- Be able to explain how a distributed hash table might be implemented
+to realize a key-value pair database in P2P fashion. Including DHT
+construction, storing and retrieving entries.
+- Be able to explain how a circular DHT could be used to allow
+a DHT to scale. (Be able to articulate the scaling problem that
+a circular DHT is meant to solve.)
+- Be able to explain problems with a "purely circular" DHT, how that
+might be solved. Be able to articulate the generic tradeoff 
+in DHT construction.
+- Be able to explain how DHTs manage to maintain both the DHT and
+information that it contains despite peer churn.
+
+- Clients are assigned IDs.  IDs are used by closest-fit to determine who is responsible for the hash of a key.
+  They keep track of prev and nxt in a circle to ensure if they don't have a key, they can eventually get to someone
+that does.  Purely circular DHTs cost N/2 lookups to find any element.  Shortcuts through the circle can help but
+come at a price of complexity and memory cost.  Churn effects are mitigated by keeping track of several prev's and 
+nexts and asking them if they are still alive, periodically.  That allows them to update the circle as needed.
+
+2.7
+
+- From a socket programming perspective, be able to explain the
+similarities and differences between implementing a client/server
+application implemented with UDP versus TCP as the underlying transport
+protocol.
+
+*Don't need handshaking, dedicated port for every connection with UDP.  A single socket can be used for it.  
