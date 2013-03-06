@@ -102,26 +102,54 @@
 
 - Be able to explain how a transport protocol can provide the abstraction of a
   reliable channel over an unreliable network layer.
+    - Using things like acks and segment numbers, the transport layer can
+      compensate for losses at the network layer and make it so that, from the
+      application's perspective, the layers underneath are perfectly reliable
 
 - Be able to use the functions associated with the unidirectional reliable
   transfer protocol depicted in Figure 3.8 to design simple reliable transport
   protocols.
+    - rdt_send() from application layer (to transport layer) at source
+    - udt_send() on transport layer (to network layer) at source
+    - rdt_recv() on transport layer (from network layer) at dest
+    - deliver_data() on transport layer (from transport layer) at dest
 
 3.4.1
 
 - Be able to design and/or explain the functionality of a reliable transport
   protocol through the use of finite state machine diagrams.
+    - Page 206
 
 - Be able to explain and use in transport protocol design the different
   mechanisms available to deal with imperfections in the network layer.
+    - Positive and negative ACKs (to deal with bit errors)
+        - Error detection, receiver feedback, retransmission
+    - Sequence numbers
+        - Only need alternating if packets aren't lost but only corrupted
+        - No need for NAK if ACK contains sequence number for ACKed segment
+    - Timeouts for retransmission (deals with lossy)
+    - Pipelining (instead of stop and wait)
+        - Go back N
+            - In case of timeout or re-ack, retransmit back to a last acked
+              segment
+            - Allows for cumulative acks
+            - Receiver can just drop unexpected packets, no buffering
+        - Selective repeat
+            - Don't have to retransmit whole ranges, the receiver buffers the
+              received packets, and must ACK each one individually
+            - Server can re-send just those packets which have not been ACKed
+
 
 - Be able to explain, e.g., using a finite state machine, the functionality of
   a alternating-bit-protocol.
+    - Page 211-215
 
 3.4.2
 
 - Be able to explain the why stop-and-wait protocols (like the alternating bit
   protocol) is inefficient.
+    - Have to wait whole RTT per packet.  Link can handle much more traffic
+      than that.
 
 - Be able to explain how this inefficiency might be addressed through a
   pipelined protocol.
@@ -133,25 +161,64 @@
 
 - Be able to explain the functionality of a go-back-N (GBN) transport protocol,
   e.g., by using an extended FSM.
+   - Extended FSM on page 221
+   - Sender can transmit packets in order from its window, the first packet of
+     which is the first unACKed packet
+   - ACKs are cumulative, an ACK should mark all previous sequence numbers as
+     ACKed.
+   - If a repeat ACK is received or timeout occurs, ALL packets from the last
+     unACKed packet will be retransmitted
+   - See page 220 figure 3.19
 
 - Be able to explain the sliding window mechanism used by the GBN protocol,
   e.g., by using a sender's view of the sequence number space.
+    - See page 220 figure 3.19
+    - Base of window is first unACKed packet.  Can send up to the end of the
+      window (base + window size)
+    - When an ACK comes in, we ACK all packets through that number, and slide
+      the window up to the new first unACKed packet
+    - If timeout occurs, we start from beginning of window and retransmit all
+      packets again
 
 3.4.4
 
 - Be able to explain how the selective repeat (SR) protocol is an improvement
   over the GBN protocol.
+    - It's an improvement in that if a single message is lost, we don't have to
+      use the extra bandwidth to retransmit EVERYTHING after that packet, even
+      when those packets may have arrived successfully.  The retransmission
+      from GBN can even cause additional losses, resulting in even more
+      unnecessary bandwidth
+    - It's bad, however, because the receiver is more complex (has to buffer
+      packets within its window) and the receiver must ACK every packet (rather
+      than doing cumulative ACKs)
 
 - Be able to explain the sliding window mechanism used by the SR protocol,
   e.g., by showing sender and receiver views of the sequence number space.
+    - Page 225
+    - The sender can only send a certain number of packets past the last
+      unACKed packet.  (this way we don't max out the buffer in the receiver,
+      and can have a smaller sequence number space without ambiguity)
+    - Receiver keeps a window to allow for smaller sequence number space.  ACKs
+      all received packets in the window (and buffers them), but also reACKs
+      those from below the window that are received again (in case of ACK
+      loss)
 
 - Be able to explain the functionality of the SR protocol, e.g., through the
   use of a ladder diagram and/or by explaining the events and resulting actions
   at both sender and receiver.
+    - Ladder diagram page 227
+    - Receiver ACKs all packets
+    - Sender only retransmits packets that have not been ACKed in case of
+      timeout
 
 - Be able to explain why, if the window size of a protocol like SR is of the
   same magnitude as the sequence number space, it can lead to protocol
   ambiguity.
+    - If all the ACKs are lost (but all packets made it) then the retransmission
+      of the first packet can look like the next packet to the receiver
+    - Page 228
+
 
 3.5
 
